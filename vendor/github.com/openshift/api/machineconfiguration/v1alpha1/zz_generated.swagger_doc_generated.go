@@ -96,8 +96,56 @@ func (MachineConfigNodeStatusPinnedImageSet) SwaggerDoc() map[string]string {
 	return map_MachineConfigNodeStatusPinnedImageSet
 }
 
+var map_OSImageStream = map[string]string{
+	"":         "OSImageStream describes a set of streams and associated images available for the MachineConfigPools to be used as base OS images.\n\nThe resource is a singleton named \"cluster\".\n\nCompatibility level 4: No compatibility is provided, the API can change at any point for any reason. These capabilities should not be used by applications needing long term support.",
+	"metadata": "metadata is the standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+	"spec":     "spec contains the desired OSImageStream config configuration.",
+	"status":   "status describes the last observed state of this OSImageStream. Populated by the MachineConfigOperator after reading release metadata. When not present, the controller has not yet reconciled this resource.",
+}
+
+func (OSImageStream) SwaggerDoc() map[string]string {
+	return map_OSImageStream
+}
+
+var map_OSImageStreamList = map[string]string{
+	"":         "OSImageStreamList is a list of OSImageStream resources\n\nCompatibility level 4: No compatibility is provided, the API can change at any point for any reason. These capabilities should not be used by applications needing long term support.",
+	"metadata": "metadata is the standard list's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+}
+
+func (OSImageStreamList) SwaggerDoc() map[string]string {
+	return map_OSImageStreamList
+}
+
+var map_OSImageStreamSet = map[string]string{
+	"name":              "name is the identifier of the stream. This name must be suitable for use as a container image tag or label, which restricts it to simple alphanumeric characters.\n\nMust not be empty and must not exceed 70 characters in length. Must only contain alphanumeric characters, hyphens ('-'), or dots ('.').",
+	"osImage":           "osImage is an OS Image referenced by digest.\n\nThe format of the image pull spec is: host[:port][/namespace]/name@sha256:<digest>, where the digest must be 64 characters long, and consist only of lowercase hexadecimal characters, a-f and 0-9. The length of the whole spec must be between 1 to 447 characters.",
+	"osExtensionsImage": "osExtensionsImage is an OS Extensions Image referenced by digest.\n\nThe format of the image pull spec is: host[:port][/namespace]/name@sha256:<digest>, where the digest must be 64 characters long, and consist only of lowercase hexadecimal characters, a-f and 0-9. The length of the whole spec must be between 1 to 447 characters.",
+}
+
+func (OSImageStreamSet) SwaggerDoc() map[string]string {
+	return map_OSImageStreamSet
+}
+
+var map_OSImageStreamSpec = map[string]string{
+	"": "OSImageStreamSpec defines the desired state of a OSImageStream.",
+}
+
+func (OSImageStreamSpec) SwaggerDoc() map[string]string {
+	return map_OSImageStreamSpec
+}
+
+var map_OSImageStreamStatus = map[string]string{
+	"":                 "OSImageStreamStatus describes the current state of a OSImageStream.",
+	"availableStreams": "availableStreams is a list of the available OS Image Streams available and their associated URLs for both OS and Extensions images.\n\nMust have at least one item and may not exceed 100 items.",
+	"defaultStream":    "defaultStream is the name of the stream that should be used as the default when no specific stream is requested by a MachineConfigPool. Must reference the name of one of the streams in availableStreams.\n\nMust have at least one item and may not exceed 70 items.",
+}
+
+func (OSImageStreamStatus) SwaggerDoc() map[string]string {
+	return map_OSImageStreamStatus
+}
+
 var map_PinnedImageRef = map[string]string{
-	"name": "name is an OCI Image referenced by digest.\n\nThe format of the image ref is: host[:port][/namespace]/name@sha256:<digest>",
+	"name": "name is an OCI Image referenced by digest. The format of the image pull spec is: host[:port][/namespace]/name@sha256:<digest>, where the digest must be 64 characters long, and consist only of lowercase hexadecimal characters, a-f and 0-9. The length of the whole spec must be between 1 to 447 characters.",
 }
 
 func (PinnedImageRef) SwaggerDoc() map[string]string {

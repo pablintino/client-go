@@ -4225,6 +4225,11 @@
           },
           "$ref": "#/definitions/com.github.openshift.api.config.v1.CloudLoadBalancerConfig"
         },
+        "ipFamily": {
+          "description": "ipFamily specifies the IP protocol family that should be used for AWS network resources. This controls whether AWS resources are created with IPv4-only, or dual-stack networking with IPv4 or IPv6 as the primary protocol family.",
+          "type": "string",
+          "default": "IPv4"
+        },
         "region": {
           "description": "region holds the default AWS region for new AWS resources created by the cluster.",
           "type": "string",
@@ -4657,6 +4662,11 @@
         "cloudName": {
           "description": "cloudName is the name of the Azure cloud environment which can be used to configure the Azure SDK with the appropriate Azure API endpoints. If empty, the value is equal to `AzurePublicCloud`.",
           "type": "string"
+        },
+        "ipFamily": {
+          "description": "ipFamily specifies the IP protocol family that should be used for Azure network resources. This controls whether Azure resources are created with IPv4-only, or dual-stack networking with IPv4 or IPv6 as the primary protocol family.",
+          "type": "string",
+          "default": "IPv4"
         },
         "networkResourceGroupName": {
           "description": "networkResourceGroupName is the Resource Group for network resources like the Virtual Network and Subnets used by the cluster. If empty, the value is same as ResourceGroupName.",
@@ -5504,7 +5514,7 @@
           "default": ""
         },
         "desiredUpdate": {
-          "description": "desiredUpdate is an optional field that indicates the desired value of the cluster version. Setting this value will trigger an upgrade (if the current version does not match the desired version). The set of recommended update values is listed as part of available updates in status, and setting values outside that range may cause the upgrade to fail.\n\nSome of the fields are inter-related with restrictions and meanings described here. 1. image is specified, version is specified, architecture is specified. API validation error. 2. image is specified, version is specified, architecture is not specified. The version extracted from the referenced image must match the specified version. 3. image is specified, version is not specified, architecture is specified. API validation error. 4. image is specified, version is not specified, architecture is not specified. image is used. 5. image is not specified, version is specified, architecture is specified. version and desired architecture are used to select an image. 6. image is not specified, version is specified, architecture is not specified. version and current architecture are used to select an image. 7. image is not specified, version is not specified, architecture is specified. API validation error. 8. image is not specified, version is not specified, architecture is not specified. API validation error.\n\nIf an upgrade fails the operator will halt and report status about the failing component. Setting the desired update value back to the previous version will cause a rollback to be attempted. Not all rollbacks will succeed.",
+          "description": "desiredUpdate is an optional field that indicates the desired value of the cluster version. Setting this value will trigger an upgrade (if the current version does not match the desired version). The set of recommended update values is listed as part of available updates in status, and setting values outside that range may cause the upgrade to fail.\n\nSome of the fields are inter-related with restrictions and meanings described here. 1. image is specified, version is specified, architecture is specified. API validation error. 2. image is specified, version is specified, architecture is not specified. The version extracted from the referenced image must match the specified version. 3. image is specified, version is not specified, architecture is specified. API validation error. 4. image is specified, version is not specified, architecture is not specified. image is used. 5. image is not specified, version is specified, architecture is specified. version and desired architecture are used to select an image. 6. image is not specified, version is specified, architecture is not specified. version and current architecture are used to select an image. 7. image is not specified, version is not specified, architecture is specified. API validation error. 8. image is not specified, version is not specified, architecture is not specified. API validation error.\n\nIf an upgrade fails the operator will halt and report status about the failing component. Setting the desired update value back to the previous version will cause a rollback to be attempted if the previous version is within the current minor version. Not all rollbacks will succeed, and some may unrecoverably break the cluster.",
           "$ref": "#/definitions/com.github.openshift.api.config.v1.Update"
         },
         "overrides": {
@@ -11252,7 +11262,7 @@
           "default": ""
         },
         "force": {
-          "description": "force allows an administrator to update to an image that has failed verification or upgradeable checks. This option should only be used when the authenticity of the provided image has been verified out of band because the provided image will run with full administrative access to the cluster. Do not use this flag with images that comes from unknown or potentially malicious sources.",
+          "description": "force allows an administrator to update to an image that has failed verification or upgradeable checks that are designed to keep your cluster safe. Only use this if: * you are testing unsigned release images in short-lived test clusters or * you are working around a known bug in the cluster-version\n  operator and you have verified the authenticity of the provided\n  image yourself.\nThe provided image will run with full administrative access to the cluster. Do not use this flag with images that come from unknown or potentially malicious sources.",
           "type": "boolean",
           "default": false
         },
@@ -23531,6 +23541,10 @@
           "description": "projectID is the project in which the GCP machine provider will create the VM.",
           "type": "string"
         },
+        "provisioningModel": {
+          "description": "provisioningModel is an optional field that determines the provisioning model for the GCP machine instance. Valid values are \"Spot\" and omitted. When set to Spot, the instance runs as a Google Cloud Spot instance which provides significant cost savings but may be preempted by Google Cloud Platform when resources are needed elsewhere. When omitted, the machine will be provisioned as a standard on-demand instance. This field cannot be used together with the preemptible field.",
+          "type": "string"
+        },
         "region": {
           "description": "region is the region in which the GCP machine provider will create the VM.",
           "type": "string",
@@ -25068,6 +25082,114 @@
           "description": "name is the name of the pinned image set. Must be a lowercase RFC-1123 subdomain name (https://tools.ietf.org/html/rfc1123) consisting of only lowercase alphanumeric characters, hyphens (-), and periods (.), and must start and end with an alphanumeric character, and be at most 253 characters in length.",
           "type": "string",
           "default": ""
+        }
+      }
+    },
+    "com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStream": {
+      "description": "OSImageStream describes a set of streams and associated URLs available for the MachineConfigPools to be used as base OS images.\n\nCompatibility level 4: No compatibility is provided, the API can change at any point for any reason. These capabilities should not be used by applications needing long term support.",
+      "type": "object",
+      "required": [
+        "spec"
+      ],
+      "properties": {
+        "apiVersion": {
+          "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+          "type": "string"
+        },
+        "kind": {
+          "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "metadata is the standard object's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+          "default": {},
+          "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ObjectMeta"
+        },
+        "spec": {
+          "description": "spec contains the desired OSImageStream config configuration.",
+          "$ref": "#/definitions/com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStreamSpec"
+        },
+        "status": {
+          "description": "status describes the last observed state of this OSImageStream. Populated by the MachineConfigOperator after reading release metadata. When not present, the controller has not yet reconciled this resource.",
+          "$ref": "#/definitions/com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStreamStatus"
+        }
+      }
+    },
+    "com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStreamList": {
+      "description": "OSImageStreamList is a list of OSImageStream resources\n\nCompatibility level 4: No compatibility is provided, the API can change at any point for any reason. These capabilities should not be used by applications needing long term support.",
+      "type": "object",
+      "required": [
+        "metadata",
+        "items"
+      ],
+      "properties": {
+        "apiVersion": {
+          "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "default": {},
+            "$ref": "#/definitions/com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStream"
+          }
+        },
+        "kind": {
+          "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "metadata is the standard list's metadata. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata",
+          "default": {},
+          "$ref": "#/definitions/io.k8s.apimachinery.pkg.apis.meta.v1.ListMeta"
+        }
+      }
+    },
+    "com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStreamSpec": {
+      "description": "OSImageStreamSpec defines the desired state of a OSImageStream.",
+      "type": "object"
+    },
+    "com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStreamStatus": {
+      "description": "OSImageStreamStatus describes the current state of a OSImageStream.",
+      "type": "object",
+      "properties": {
+        "availableStreams": {
+          "description": "availableStreams is a list of the available OS Image Streams available and their associated URLs for both OS and Extensions images.\n\nA maximum of 100 streams may be specified.",
+          "type": "array",
+          "items": {
+            "default": {},
+            "$ref": "#/definitions/com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStreamURLSet"
+          },
+          "x-kubernetes-list-map-keys": [
+            "name"
+          ],
+          "x-kubernetes-list-type": "map"
+        },
+        "defaultStream": {
+          "description": "defaultStream is the name of the stream that should be used as the default when no specific stream is requested by a MachineConfigPool. Must reference the name of one of the streams in availableStreams. Must be set when availableStreams is not empty. When not set and availableStreams is empty, controllers should use the default one stated in the release image.",
+          "type": "string"
+        }
+      }
+    },
+    "com.github.openshift.api.machineconfiguration.v1alpha1.OSImageStreamURLSet": {
+      "type": "object",
+      "required": [
+        "name",
+        "osImageURL",
+        "osExtensionsImageURL"
+      ],
+      "properties": {
+        "name": {
+          "description": "name is the identifier of the stream.\n\nMust not be empty and must not exceed 70 characters in length. Must only contain alphanumeric characters, hyphens ('-'), or dots ('.').",
+          "type": "string"
+        },
+        "osExtensionsImageURL": {
+          "description": "osExtensionsImageURL is an OS Extensions Image referenced by digest.\n\nThe format of the URL ref is: host[:port][/namespace]/name@sha256:<digest>",
+          "type": "string"
+        },
+        "osImageURL": {
+          "description": "osImageURL is an OS Image referenced by digest.\n\nThe format of the URL ref is: host[:port][/namespace]/name@sha256:<digest>",
+          "type": "string"
         }
       }
     },
@@ -30464,7 +30586,7 @@
           "$ref": "#/definitions/io.k8s.api.core.v1.LocalObjectReference"
         },
         "domain": {
-          "description": "domain is a DNS name serviced by the ingress controller and is used to configure multiple features:\n\n* For the LoadBalancerService endpoint publishing strategy, domain is\n  used to configure DNS records. See endpointPublishingStrategy.\n\n* When using a generated default certificate, the certificate will be valid\n  for domain and its subdomains. See defaultCertificate.\n\n* The value is published to individual Route statuses so that end-users\n  know where to target external DNS records.\n\ndomain must be unique among all IngressControllers, and cannot be updated.\n\nIf empty, defaults to ingress.config.openshift.io/cluster .spec.domain.",
+          "description": "domain is a DNS name serviced by the ingress controller and is used to configure multiple features:\n\n* For the LoadBalancerService endpoint publishing strategy, domain is\n  used to configure DNS records. See endpointPublishingStrategy.\n\n* When using a generated default certificate, the certificate will be valid\n  for domain and its subdomains. See defaultCertificate.\n\n* The value is published to individual Route statuses so that end-users\n  know where to target external DNS records.\n\ndomain must be unique among all IngressControllers, and cannot be updated.\n\nIf empty, defaults to ingress.config.openshift.io/cluster .spec.domain.\n\nThe domain value must be a valid DNS name. It must consist of lowercase alphanumeric characters, '-' or '.', and each label must start and end with an alphanumeric character and not exceed 63 characters. Maximum length of a valid DNS domain is 253 characters.\n\nThe implementation may add a prefix such as \"router-default.\" to the domain when constructing the router canonical hostname. To ensure the resulting hostname does not exceed the DNS maximum length of 253 characters, the domain length is additionally validated at the IngressController object level. For the maximum length of the domain value itself, the shortest possible variant of the prefix and the ingress controller name was considered for example \"router-a.\"",
           "type": "string"
         },
         "endpointPublishingStrategy": {
@@ -37403,7 +37525,7 @@
           "type": "string"
         },
         "termination": {
-          "description": "termination indicates termination type.\n\n* edge - TLS termination is done by the router and http is used to communicate with the backend (default) * passthrough - Traffic is sent straight to the destination without the router providing TLS termination * reencrypt - TLS termination is done by the router and https is used to communicate with the backend\n\nNote: passthrough termination is incompatible with httpHeader actions",
+          "description": "termination indicates the TLS termination type.\n\n* edge - TLS termination is done by the router and http is used to communicate with the backend (default)\n\n* passthrough - Traffic is sent straight to the destination without the router providing TLS termination\n\n* reencrypt - TLS termination is done by the router and https is used to communicate with the backend\n\nNote: passthrough termination is incompatible with httpHeader actions",
           "type": "string",
           "default": ""
         }
